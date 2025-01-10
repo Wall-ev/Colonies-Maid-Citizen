@@ -19,7 +19,7 @@ public class MenuIntegration {
     }
 
     private static void renderConfig(ConfigBuilder root, ConfigEntryBuilder entryBuilder) {
-        ConfigCategory vanilla = root.getOrCreateCategory(Component.translatable("config.maidcolonies.render"));
+        ConfigCategory vanilla = root.getOrCreateCategory(Component.translatable("config.colonies_maidcitizen.render"));
 
         vanilla.addEntry(entryBuilder.startBooleanToggle(Component.translatable("config.colonies_maidcitizen.render.use_tlm_model_render"), RenderConfig.ENABLE_GLOBAL_RENDER.get()).setDefaultValue(RenderConfig.ENABLE_GLOBAL_RENDER.getDefault()).setTooltip(Component.translatable("config.colonies_maidcitizen.render.use_tlm_model_render.tooltip")).setSaveConsumer(RenderConfig.ENABLE_GLOBAL_RENDER::set).build());
     }
