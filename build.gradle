@@ -1,0 +1,462 @@
+import proguard.gradle.ProGuardTask
+
+buildscript {
+    repositories {
+        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+
+        classpath 'com.guardsquare:proguard-gradle:7.6.1'
+    }
+}
+
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    // This should be below the net.minecraftforge.gradle plugin
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    // Mixin Plugin
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+
+String version_type = "beta"
+
+base {
+    archivesName = "colonies_maidcitizen"
+    version = "${minecraft_version}-${version_type}-v${mod_version}"
+    group = mod_group_id
+}
+
+// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+minecraft {
+    // The mappings can be changed at any time and must be in the following format.
+    // Channel:   Version:
+    // official   MCVersion             Official field/method names from Mojang mapping files
+    // parchment  YYYY.MM.DD-MCVersion  Open community-sourced parameter names and javadocs layered on top of official
+    //
+    // You must be aware of the Mojang license when using the 'official' or 'parchment' mappings.
+    // See more information here: https://github.com/MinecraftForge/MCPConfig/blob/master/Mojang.md
+    //
+    // Parchment is an unofficial project maintained by ParchmentMC, separate from MinecraftForge
+    // Additional setup is needed to use their mappings: https://parchmentmc.org/docs/getting-started
+    //
+    // Use non-default mappings at your own risk. They may not always work.
+    // Simply re-run your setup task after changing the mappings to update your workspace.
+    mappings channel: mapping_channel, version: mapping_version
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // When true, this property will have all Eclipse/IntelliJ IDEA run configurations run the "prepareX" task for the given run configuration before launching the game.
+    // In most cases, it is not necessary to enable.
+    // enableEclipsePrepareRuns = true
+    // enableIdeaPrepareRuns = true
+
+    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
+    // It is REQUIRED to be set to true for this template to function.
+    // See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+    copyIdeResources = true
+
+    // When true, this property will add the folder name of all declared run configurations to generated IDE run configurations.
+    // The folder name can be set on a run configuration using the "folderName" property.
+    // By default, the folder name of a run configuration is the name of the Gradle project containing it.
+    // generateRunFolders = true
+
+    // This property enables access transformers for use in development.
+    // They will be applied to the Minecraft artifact.
+    // The access transformer file can be anywhere in the project.
+    // However, it must be at "META-INF/accesstransformer.cfg" in the final mod jar to be loaded by Forge.
+    // This default location is a best practice to automatically put the file in the right place in the final jar.
+    // See https://docs.minecraftforge.net/en/latest/advanced/accesstransformers/ for more information.
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        // applies to all the run configs below
+        configureEach {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            // The markers can be added/remove as needed separated by commas.
+            // "SCAN": For mods scan.
+            // "REGISTRIES": For firing of registry events.
+            // "REGISTRYDUMP": For getting the contents of all registries.
+            property 'forge.logging.markers', 'REGISTRIES'
+
+            // Recommended logging level for the console
+            // You can set various levels here.
+            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            property 'forge.enabledGameTestNamespaces', mod_id
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+        }
+
+        client2 {
+            parent minecraft.runs.client
+            workingDirectory project.file('run/client_b')
+            args '--username', 'tartaric_acid'
+            mods {
+                touhou_little_maid {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+        }
+
+        // This run config launches GameTestServer and runs all registered gametests, then exits.
+        // By default, the server will crash when no gametests are provided.
+        // The gametest system is also enabled by default for other run configs under the /test command.
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        data {
+            // example of overriding the workingDirectory set in configureEach above
+            workingDirectory project.file('run-data')
+
+            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+// Include resources generated by data generators.
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    // Put repositories for dependencies here
+    // ForgeGradle automatically adds the Forge maven and Maven Central for you
+
+    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
+    // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
+    flatDir {
+        dir 'libs'
+    }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        // Patchouli
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+    maven {
+        url "https://cursemaven.com"
+    }
+    maven {
+        url = "https://api.modrinth.com/maven"
+    }
+
+    maven {
+        // Shedaniel's maven (Architectury API)
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
+
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url = "https://maven.saps.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
+
+    maven {
+        url "https://maven.shedaniel.me/"
+    }
+
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
+}
+
+
+// 联动(烹饪)
+dependencies {
+}
+
+// 联动(存储)
+dependencies {
+}
+
+// 联动(其他)
+dependencies {
+}
+
+
+
+// 基础配置
+dependencies {
+    // 本体
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // Apply Mixin AP
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.0"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.0")) {
+        jarJar.ranged(it, "[0.4.0,)")
+    }
+}
+
+// 开发工具
+dependencies {
+//    compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+//    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+//
+//    implementation fg.deobf("curse.maven:jade-324717:${jade_file_id}")
+//    implementation fg.deobf("curse.maven:the-one-probe-245211:${top_file_id}")
+    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:${cloth_config_forge}")
+//
+//     rei
+//    compileOnly fg.deobf("curse.maven:architectury-api-419699:${architectury_api_id}")
+//    compileOnly fg.deobf("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}")
+//
+//     emi
+//     Forge (see below block as well if you use Forge Gradle)
+//    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}:api")
+//    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}")
+//
+//    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+//    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+//    implementation fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+}
+
+// 直属依赖项
+dependencies {
+    implementation fg.deobf("curse.maven:touhou-little-maid-355044:${touhou_little_maid_file_id}")
+
+//    implementation "curse.maven:easy-npc-559312:6009030"
+
+    implementation fg.deobf("curse.maven:blockui-522992:5658253")
+    implementation fg.deobf("curse.maven:domum-ornamentum-527361:5764067")
+    implementation fg.deobf("curse.maven:multi-piston-303278:5204918")
+    implementation fg.deobf("curse.maven:structurize-298744:5977611")
+    implementation fg.deobf("curse.maven:towntalk-900364:5355511")
+//    implementation fg.deobf("curse.maven:minecolonies-245506:6013161")
+    implementation fg.deobf("curse.maven:minecolonies-245506:6035982")
+
+//    implementation fg.deobf("curse.maven:minecolonies-245506:5833318")
+//    implementation fg.deobf("curse.maven:minecolonies-245506:6013161-sources-6013164")
+}
+
+// api
+dependencies {
+//    implementation fg.deobf("dev.architectury:architectury-forge:${architectury_version}")
+//    runtimeOnly fg.deobf("curse.maven:kiwi-303657:${kiwi_file_id}")
+}
+
+// 开发工具
+dependencies {
+    runtimeOnly fg.deobf("curse.maven:nbtedit-reborn-678133:${nbtedit_reborn_id}")
+}
+
+
+// This block of code expands all declared replace properties in the specified resource targets.
+// A missing property will result in an error. Properties are expanded using ${} Groovy notation.
+// When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.
+// See https://docs.gradle.org/current/dsl/org.gradle.language.jvm.tasks.ProcessResources.html
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+            forge_version: forge_version, forge_version_range: forge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors: mod_authors, mod_description: mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+// Example for how to get properties into the manifest for reading at runtime.
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : '1', // We are version 1 of ourselves
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_authors,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+
+    // This is the preferred method to reobfuscate your jar file
+    finalizedBy 'reobfJar'
+}
+
+// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing:
+// tasks.named('publish').configure {
+//     dependsOn 'reobfJar'
+// }
+
+// Example configuration to allow publishing using the maven-publish plugin
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+
+tasks.register('proguard', ProGuardTask) {
+//    configuration file('proguard.pro')
+
+    injars(tasks.named('jar', Jar).flatMap { it.archiveFile })
+
+    // Automatically handle the Java version of this build.
+    if (System.getProperty('java.version').startsWith('1.')) {
+        // Before Java 9, the runtime classes were packaged in a single jar file.
+        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+    } else {
+        // As of Java 9, the runtime classes are packaged in modular jmod files.
+        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+        //libraryjars "${System.getProperty('java.home')}/jmods/....."
+    }
+
+    verbose
+
+    outjars(layout.buildDirectory.file("maidcolonies-1.20.1-beta-v0.1.0-minified.jar"))
+}
+
+// Define a ProGuard task.
+
+tasks.register('proguard2', ProGuardTask) {
+
+    // You should probably import a more compact ProGuard-style configuration
+    // file for all static settings, but we're specifying them all here, for
+    // the sake of the example.
+    //configuration 'configuration.pro'
+
+    verbose
+
+    // Specify the input jars, output jars, and library jars.
+
+    injars  'maidcolonies-1.20.1-beta-v0.1.0-all.jar'
+    outjars 'out.jar'
+
+    // Automatically handle the Java version of this build.
+    if (System.getProperty('java.version').startsWith('1.')) {
+        // Before Java 9, the runtime classes were packaged in a single jar file.
+        libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+    } else {
+        // As of Java 9, the runtime classes are packaged in modular jmod files.
+        libraryjars "${System.getProperty('java.home')}/jmods/java.base.jmod", jarfilter: '!**.jar', filter: '!module-info.class'
+    }
+
+    libraryjars '/usr/local/java/servlet/servlet.jar'
+
+    // Save the obfuscation mapping to a file, so you can de-obfuscate any stack
+    // traces later on. Keep a fixed source file attribute and all line number
+    // tables to get line numbers in the stack traces.
+    // You can comment this out if you're not interested in stack traces.
+
+    printmapping 'out.map'
+    renamesourcefileattribute 'SourceFile'
+    keepattributes 'SourceFile,LineNumberTable'
+
+    // Preserve all annotations.
+
+    keepattributes '*Annotation*'
+
+    // You can print out the seeds that are matching the keep options below.
+
+    //printseeds 'out.seeds'
+
+    // Preserve all public servlets.
+
+    keep 'public class * implements javax.servlet.Servlet'
+
+    // Preserve all native method names and the names of their classes.
+
+    keepclasseswithmembernames includedescriptorclasses: true, 'class * { \
+        native <methods>; \
+    }'
+
+    // Preserve the special static methods that are required in all enumeration
+    // classes.
+
+    keepclassmembers allowoptimization: true, 'enum * { \
+        public static **[] values(); \
+        public static ** valueOf(java.lang.String); \
+    }'
+
+    // Explicitly preserve all serialization members. The Serializable interface
+    // is only a marker interface, so it wouldn't save them.
+    // You can comment this out if your library doesn't use serialization.
+    // If your code contains serializable classes that have to be backward
+    // compatible, please refer to the manual.
+
+    keepclassmembers 'class * implements java.io.Serializable { \
+        static final long serialVersionUID; \
+        static final java.io.ObjectStreamField[] serialPersistentFields; \
+        private void writeObject(java.io.ObjectOutputStream); \
+        private void readObject(java.io.ObjectInputStream); \
+        java.lang.Object writeReplace(); \
+        java.lang.Object readResolve(); \
+    }'
+
+    // Your application may contain more items that need to be preserved;
+    // typically classes that are dynamically created using Class.forName:
+
+    // keep 'public class com.example.MyClass'
+    // keep 'public interface com.example.MyInterface'
+    // keep 'public class * implements com.example.MyInterface'
+}

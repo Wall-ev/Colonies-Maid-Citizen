@@ -1,0 +1,8 @@
+{
+  "item.colonies_maidcitizen.npc_tool": "§aNpc Tool",
+  "item.colonies_maidcitizen.npc_tool.desc": "§7- Right-click on a resident to change skins, and Shift right-click on a resident to toggle the rendering of the maid model of a townsman\n§7- Currently, these settings can only be changed if the permission is set to Officer or Owner",
+  "config.colonies_maidcitizen.render": "Render",
+  "config.colonies_maidcitizen.render.use_tlm_model_render": "Use Maid Model Render",
+  "config.colonies_maidcitizen.render.use_tlm_model_render.tooltip": "This is the master control for rendering the rendering of the inhabitants using the maid model",
+  "gui.colonies_maidcitizen.enable_maid_model_render.button": "Maid Model Render"
+}
