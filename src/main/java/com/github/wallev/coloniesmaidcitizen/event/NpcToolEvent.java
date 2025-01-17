@@ -11,9 +11,12 @@ import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import static com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider.MAID_COLONIES_CAP;
 
@@ -60,13 +63,22 @@ public final class NpcToolEvent {
             // event.setCanceled(true);
         } else {
             // 如果是服务端，停止寻路;否则打开模型设置界面
-            if (!player.level.isClientSide) {
-                citizen.getNavigation().stop();
-                event.setCanceled(true);
+            if (player.level.isClientSide && FMLEnvironment.dist == Dist.CLIENT) {
+                openModelGui(citizen, event);
             } else {
-                Minecraft.getInstance().setScreen(new ColoniesMaidModelGui(citizen));
-                event.setCanceled(true);
+                stopNavigation(event, citizen);
             }
         }
+    }
+
+    private static void stopNavigation(PlayerInteractEvent.EntityInteract event, AbstractEntityCitizen citizen) {
+        citizen.getNavigation().stop();
+        event.setCanceled(true);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void openModelGui(AbstractEntityCitizen citizen, PlayerInteractEvent.EntityInteract event) {
+        Minecraft.getInstance().setScreen(new ColoniesMaidModelGui(citizen));
+        event.setCanceled(true);
     }
 }
