@@ -1,11 +1,11 @@
-package com.github.wallev.coloniesmaidcitizen;
+package com.github.wallev.coloniesmaidcitizen.handler;
 
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.ConvertMaidEvent;
-import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 
 public class MaidModelRender {
     @SubscribeEvent
@@ -18,10 +18,7 @@ public class MaidModelRender {
     private record MaidWrapper(AbstractEntityCitizen citizen) implements IMaid {
         @Override
         public String getModelId() {
-            if (citizen instanceof ICitizenMaid coloniesMaid) {
-                return coloniesMaid.getCitizenMaidModelId$MC();
-            }
-            return "";
+            return citizen instanceof ICitizenMaid coloniesMaid ? coloniesMaid.mc$getCitizenMaidModelId() : StringUtils.EMPTY;
         }
 
         @Override

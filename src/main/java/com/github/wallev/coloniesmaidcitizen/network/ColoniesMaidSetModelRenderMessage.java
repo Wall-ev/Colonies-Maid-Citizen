@@ -9,14 +9,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ColoniesMaidSetModelRenderMessage {
-    private final int id;
-    private final Boolean enable;
-
-    public ColoniesMaidSetModelRenderMessage(int id, Boolean enable) {
-        this.id = id;
-        this.enable = enable;
-    }
+public record ColoniesMaidSetModelRenderMessage(int id, Boolean enable) {
 
     public static void encode(ColoniesMaidSetModelRenderMessage message, FriendlyByteBuf buf) {
         buf.writeInt(message.id);
@@ -37,7 +30,7 @@ public class ColoniesMaidSetModelRenderMessage {
                 }
                 Entity entity = sender.level.getEntity(message.id);
                 if (entity instanceof AbstractEntityCitizen citizen && citizen instanceof ICitizenMaid coloniesMaid) {
-                    coloniesMaid.setEnableCitizenMaidModelRender$MC(message.enable);
+                    coloniesMaid.mc$setEnableCitizenMaidModelRender(message.enable);
                 }
             });
         }

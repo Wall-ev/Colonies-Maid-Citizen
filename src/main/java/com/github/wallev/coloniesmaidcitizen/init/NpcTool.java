@@ -1,5 +1,6 @@
 package com.github.wallev.coloniesmaidcitizen.init;
 
+import com.github.wallev.coloniesmaidcitizen.util.version.VComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +17,6 @@ public class NpcTool extends Item {
 
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> components, TooltipFlag isAdvanced) {
-        components.add(Component.translatable("item.colonies_maidcitizen.npc_tool.desc"));
+        components.add(VComponent.translatable("item.colonies_maidcitizen.npc_tool.desc"));
     }
 }

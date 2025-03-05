@@ -12,14 +12,7 @@ import java.util.function.Supplier;
 
 import static com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider.MAID_COLONIES_CAP;
 
-public class CMaidColoniesSetModelRenderMessage {
-    private final int id;
-    private final Boolean enable;
-
-    public CMaidColoniesSetModelRenderMessage(int id, Boolean enable) {
-        this.id = id;
-        this.enable = enable;
-    }
+public record CMaidColoniesSetModelRenderMessage(int id, Boolean enable) {
 
     public static void encode(CMaidColoniesSetModelRenderMessage message, FriendlyByteBuf buf) {
         buf.writeInt(message.id);

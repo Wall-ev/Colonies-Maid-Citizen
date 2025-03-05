@@ -19,15 +19,16 @@ public final class NetworkHandler {
             () -> VERSION, it -> it.equals(VERSION), it -> it.equals(VERSION));
 
     public static void init() {
-        CHANNEL.registerMessage(0, ColoniesMaidModelMessage.class, ColoniesMaidModelMessage::encode, ColoniesMaidModelMessage::decode, ColoniesMaidModelMessage::handle,
+        int index = 0;
+        CHANNEL.registerMessage(index++, ColoniesMaidModelMessage.class, ColoniesMaidModelMessage::encode, ColoniesMaidModelMessage::decode, ColoniesMaidModelMessage::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(1, ColoniesMaidSetModelRenderMessage.class, ColoniesMaidSetModelRenderMessage::encode, ColoniesMaidSetModelRenderMessage::decode, ColoniesMaidSetModelRenderMessage::handle,
+        CHANNEL.registerMessage(index++, ColoniesMaidSetModelRenderMessage.class, ColoniesMaidSetModelRenderMessage::encode, ColoniesMaidSetModelRenderMessage::decode, ColoniesMaidSetModelRenderMessage::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(2, MaidColoniesSetModelRenderMessage.class, MaidColoniesSetModelRenderMessage::encode, MaidColoniesSetModelRenderMessage::decode, MaidColoniesSetModelRenderMessage::handle,
+        CHANNEL.registerMessage(index++, MaidColoniesSetModelRenderMessage.class, MaidColoniesSetModelRenderMessage::encode, MaidColoniesSetModelRenderMessage::decode, MaidColoniesSetModelRenderMessage::handle,
                 Optional.of(NetworkDirection.PLAY_TO_SERVER));
-        CHANNEL.registerMessage(3, SyncMaidColoniesClientMessage.class, SyncMaidColoniesClientMessage::encode, SyncMaidColoniesClientMessage::decode, SyncMaidColoniesClientMessage::handle,
+        CHANNEL.registerMessage(index++, SyncMaidColoniesClientMessage.class, SyncMaidColoniesClientMessage::encode, SyncMaidColoniesClientMessage::decode, SyncMaidColoniesClientMessage::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT));
-        CHANNEL.registerMessage(4, CMaidColoniesSetModelRenderMessage.class, CMaidColoniesSetModelRenderMessage::encode, CMaidColoniesSetModelRenderMessage::decode, CMaidColoniesSetModelRenderMessage::handle,
+        CHANNEL.registerMessage(index++, CMaidColoniesSetModelRenderMessage.class, CMaidColoniesSetModelRenderMessage::encode, CMaidColoniesSetModelRenderMessage::decode, CMaidColoniesSetModelRenderMessage::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 

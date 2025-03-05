@@ -10,6 +10,7 @@ import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
 import com.github.wallev.coloniesmaidcitizen.network.ColoniesMaidModelMessage;
 import com.github.wallev.coloniesmaidcitizen.network.ColoniesMaidSetModelRenderMessage;
 import com.github.wallev.coloniesmaidcitizen.network.NetworkHandler;
+import com.github.wallev.coloniesmaidcitizen.util.version.VComponent;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -44,10 +45,10 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
         super.init();
         int startX = this.width / 2 + 50;
         int startY = this.height / 2 + 5;
-        MutableComponent enableCache = Component.translatable("gui.colonies_maidcitizen.enable_maid_model_render.button");
+        MutableComponent enableCache = VComponent.translatable("gui.colonies_maidcitizen.enable_maid_model_render.button");
         int checkBoxWidth = this.font.width(enableCache) + 20;
         int xOffset = (startX - 128) / 2 - checkBoxWidth / 2;
-        this.addRenderableWidget(new Checkbox(xOffset, startY - 101 - 20, 20, 20, enableCache, ((ICitizenMaid) entity).isEnableCitizenMaidModelRender$MC()) {
+        this.addRenderableWidget(new Checkbox(xOffset, startY - 101 - 20, 20, 20, enableCache, ((ICitizenMaid) entity).mc$isEnableCitizenMaidModelRender()) {
             public void onPress() {
                 super.onPress();
                 NetworkHandler.sendToServer(new ColoniesMaidSetModelRenderMessage(entity.getId(), this.selected()));
@@ -57,7 +58,7 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
 
     @Override
     protected void drawLeftEntity(GuiGraphics graphics, int middleX, int middleY, float mouseX, float mouseY) {
-        float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(((ICitizenMaid) entity).getCitizenMaidModelId$MC());
+        float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(((ICitizenMaid) entity).mc$getCitizenMaidModelId());
         InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, (middleX - 256 / 2) / 2, middleY + 90, (int) (45 * renderItemScale), (middleX - 256 / 2f) / 2 - mouseX, middleY + 80 - 40 - mouseY, entity);
     }
 
@@ -89,7 +90,7 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
     protected void addModelCustomTips(MaidModelInfo modelItem, List<Component> tooltips) {
         String useSoundPackId = modelItem.getUseSoundPackId();
         if (StringUtils.isNotBlank(useSoundPackId)) {
-            tooltips.add(Component.translatable("gui.touhou_little_maid.skin.tooltips.maid_use_sound_pack_id", useSoundPackId).withStyle(ChatFormatting.GOLD));
+            tooltips.add(VComponent.translatable("gui.touhou_little_maid.skin.tooltips.maid_use_sound_pack_id", useSoundPackId).withStyle(ChatFormatting.GOLD));
         }
     }
 

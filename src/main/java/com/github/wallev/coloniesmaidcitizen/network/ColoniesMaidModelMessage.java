@@ -10,14 +10,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ColoniesMaidModelMessage {
-    private final int id;
-    private final ResourceLocation modelId;
-
-    public ColoniesMaidModelMessage(int id, ResourceLocation modelId) {
-        this.id = id;
-        this.modelId = modelId;
-    }
+public record ColoniesMaidModelMessage(int id, ResourceLocation modelId) {
 
     public static void encode(ColoniesMaidModelMessage message, FriendlyByteBuf buf) {
         buf.writeInt(message.id);
@@ -38,7 +31,7 @@ public class ColoniesMaidModelMessage {
                 }
                 Entity entity = sender.level.getEntity(message.id);
                 if (entity instanceof AbstractEntityCitizen citizen && citizen instanceof ICitizenMaid coloniesMaid) {
-                    coloniesMaid.setCitizenMaidModelId$MC(message.modelId.toString());
+                    coloniesMaid.mc$setCitizenMaidModelId(message.modelId.toString());
                 }
             });
         }

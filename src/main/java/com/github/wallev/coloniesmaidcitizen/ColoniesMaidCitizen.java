@@ -1,7 +1,7 @@
 package com.github.wallev.coloniesmaidcitizen;
 
 import com.github.wallev.coloniesmaidcitizen.config.RenderConfig;
-import com.github.wallev.coloniesmaidcitizen.init.InitItems;
+import com.github.wallev.coloniesmaidcitizen.init.CmcItems;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -12,7 +12,7 @@ public final class ColoniesMaidCitizen {
     public static final String MOD_ID = "colonies_maidcitizen";
 
     public ColoniesMaidCitizen() {
-        InitItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        CmcItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, RenderConfig.init());
     }
 }

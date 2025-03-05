@@ -3,7 +3,7 @@ package com.github.wallev.coloniesmaidcitizen.event;
 import com.github.wallev.coloniesmaidcitizen.ColoniesMaidCitizen;
 import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapability;
 import com.github.wallev.coloniesmaidcitizen.client.ColoniesMaidModelGui;
-import com.github.wallev.coloniesmaidcitizen.init.InitItems;
+import com.github.wallev.coloniesmaidcitizen.init.CmcItems;
 import com.minecolonies.api.colony.IColony;
 import com.minecolonies.api.colony.IColonyManager;
 import com.minecolonies.api.colony.IColonyView;
@@ -28,7 +28,7 @@ public final class NpcToolEvent {
         Entity target = event.getTarget();
 
         // 化狸物品
-        boolean isNpcTool = player.getMainHandItem().is(InitItems.NPC_TOOL.get());
+        boolean isNpcTool = player.getMainHandItem().is(CmcItems.NPC_TOOL.get());
         // 化狸物品以及市民
         if (!(isNpcTool && target instanceof AbstractEntityCitizen citizen)) return;
 
