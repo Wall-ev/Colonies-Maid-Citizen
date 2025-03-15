@@ -6,7 +6,7 @@ import com.github.wallev.coloniesmaidcitizen.ColoniesMaidCitizen;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderNameTagEvent;
+import net.minecraftforge.client.event.RenderNameplateEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,7 +16,7 @@ public class DisableNameRendererEvent {
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
-    public static void disabledCitizenMaidNameRenderer(RenderNameTagEvent event) {
+    public static void disabledCitizenMaidNameRenderer(RenderNameplateEvent event) {
         if (event.getEntity() instanceof AbstractEntityCitizen &&
                 (event.getEntityRenderer() instanceof EntityMaidRenderer || event.getEntityRenderer() instanceof GeckoEntityMaidRenderer<?>)) {
             event.setResult(Event.Result.DENY);

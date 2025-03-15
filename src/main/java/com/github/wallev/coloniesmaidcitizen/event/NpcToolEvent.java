@@ -24,7 +24,7 @@ import static com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapab
 public final class NpcToolEvent {
     @SubscribeEvent
     public static void citizenMake(PlayerInteractEvent.EntityInteract event) {
-        Player player = event.getEntity();
+        Player player = (Player) event.getEntity();
         Entity target = event.getTarget();
 
         // 化狸物品

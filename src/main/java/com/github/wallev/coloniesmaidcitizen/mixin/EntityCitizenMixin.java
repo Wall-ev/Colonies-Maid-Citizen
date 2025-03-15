@@ -2,10 +2,10 @@ package com.github.wallev.coloniesmaidcitizen.mixin;
 
 import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
-import com.minecolonies.core.entity.citizen.EntityCitizen;
+import com.minecolonies.coremod.entity.citizen.EntityCitizen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,8 +14,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = EntityCitizen.class)
 public abstract class EntityCitizenMixin extends AbstractEntityCitizen implements ICitizenMaid {
-    protected EntityCitizenMixin(EntityType<? extends PathfinderMob> type, Level worldIn) {
-        super(type, worldIn);
+
+    public EntityCitizenMixin(EntityType<? extends AgeableMob> type, Level world) {
+        super(type, world);
     }
 
     @Inject(at = @At("TAIL"), method = "defineSynchedData()V")

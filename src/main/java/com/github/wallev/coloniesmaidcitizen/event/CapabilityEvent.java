@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
@@ -28,7 +28,7 @@ public class CapabilityEvent {
     }
 
     @SubscribeEvent
-    public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
+    public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof Player player) {
             player.level.getCapability(MAID_COLONIES_CAP).ifPresent(MaidColoniesCapability::markDirty);
         }

@@ -5,7 +5,7 @@ import com.github.wallev.coloniesmaidcitizen.util.version.VComponent;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.client.ConfigGuiHandler;
 import net.minecraftforge.fml.ModLoadingContext;
 
 public class MenuIntegration {
@@ -21,10 +21,11 @@ public class MenuIntegration {
     private static void renderConfig(ConfigBuilder root, ConfigEntryBuilder entryBuilder) {
         ConfigCategory vanilla = root.getOrCreateCategory(VComponent.translatable("config.colonies_maidcitizen.render"));
 
-        vanilla.addEntry(entryBuilder.startBooleanToggle(VComponent.translatable("config.colonies_maidcitizen.render.use_tlm_model_render"), RenderConfig.ENABLE_GLOBAL_RENDER.get()).setDefaultValue(RenderConfig.ENABLE_GLOBAL_RENDER.getDefault()).setTooltip(VComponent.translatable("config.colonies_maidcitizen.render.use_tlm_model_render.tooltip")).setSaveConsumer(RenderConfig.ENABLE_GLOBAL_RENDER::set).build());
+        vanilla.addEntry(entryBuilder.startBooleanToggle(VComponent.translatable("config.colonies_maidcitizen.render.use_tlm_model_render"), RenderConfig.ENABLE_GLOBAL_RENDER.get()).setDefaultValue(true).setTooltip(VComponent.translatable("config.colonies_maidcitizen.render.use_tlm_model_render.tooltip")).setSaveConsumer(RenderConfig.ENABLE_GLOBAL_RENDER::set).build());
     }
 
     public static void registerModsPage() {
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((client, parent) -> getConfigBuilder().setParentScreen(parent).build()));
+        ModLoadingContext.get().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () ->
+                new ConfigGuiHandler.ConfigGuiFactory((client, parent) -> getConfigBuilder().setParentScreen(parent).build()));
     }
 }

@@ -10,9 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static com.github.tartaricacid.touhoulittlemaid.item.MaidGroup.MAIN_TAB;
+
 public class NpcTool extends Item {
     public NpcTool() {
-        super(new Properties());
+        super(new Properties().tab(MAIN_TAB));
     }
 
     @Override

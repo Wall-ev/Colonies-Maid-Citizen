@@ -6,7 +6,7 @@ import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapability;
 import com.github.wallev.coloniesmaidcitizen.config.RenderConfig;
 import com.minecolonies.api.client.render.modeltype.CitizenModel;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
-import com.minecolonies.core.client.render.RenderBipedCitizen;
+import com.minecolonies.coremod.client.render.RenderBipedCitizen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -31,15 +31,15 @@ public abstract class RenderBipedCitizenMixin extends MobRenderer<AbstractEntity
         if (!RenderConfig.ENABLE_GLOBAL_RENDER.get()) return;
 
         final MaidColoniesCapability cap = citizen.level.getCapability(MAID_COLONIES_CAP, null).resolve().orElse(null);
-        if (cap == null || citizen.getCitizenDataView() == null || !cap.isEnableRender(citizen.getCitizenDataView().getColony().getID())) return;
+        if (cap == null || citizen.getCitizenDataView() == null || !cap.isEnableRender(citizen.getCitizenDataView().getColonyId())) return;
 
         if (citizen instanceof ICitizenMaid coloniesMaid && coloniesMaid.mc$isEnableCitizenMaidModelRender() && MaidModelRenderRegister.getRenderer() != null) {
             MaidModelRenderRegister.renderCitizenMaid(this.getModel(), citizen, limbSwing, partialTicks, matrixStack, renderTypeBuffer, light);
 
-            var renderNameTagEvent = new net.minecraftforge.client.event.RenderNameTagEvent(citizen, citizen.getDisplayName(), ((RenderBipedCitizen) (Object) this), matrixStack, renderTypeBuffer, light, partialTicks);
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameTagEvent);
-            if (renderNameTagEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(citizen))) {
-                this.renderNameTag(citizen, renderNameTagEvent.getContent(), matrixStack, renderTypeBuffer, light);
+            var renderNameplateEvent = new net.minecraftforge.client.event.RenderNameplateEvent(citizen, citizen.getDisplayName(), ((RenderBipedCitizen) (Object) this), matrixStack, renderTypeBuffer, light, partialTicks);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameplateEvent);
+            if (renderNameplateEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameplateEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(citizen))) {
+                this.renderNameTag(citizen, renderNameplateEvent.getContent(), matrixStack, renderTypeBuffer, light);
             }
 
             ci.cancel();
