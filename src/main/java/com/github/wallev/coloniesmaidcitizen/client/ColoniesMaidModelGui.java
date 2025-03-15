@@ -12,11 +12,13 @@ import com.github.wallev.coloniesmaidcitizen.network.ColoniesMaidSetModelRenderM
 import com.github.wallev.coloniesmaidcitizen.network.NetworkHandler;
 import com.github.wallev.coloniesmaidcitizen.util.version.VComponent;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -57,20 +59,22 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
     }
 
     @Override
-    protected void drawLeftEntity(GuiGraphics graphics, int middleX, int middleY, float mouseX, float mouseY) {
+    protected void drawLeftEntity(int middleX, int middleY, float mouseX, float mouseY) {
         float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(((ICitizenMaid) entity).mc$getCitizenMaidModelId());
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, (middleX - 256 / 2) / 2, middleY + 90, (int) (45 * renderItemScale), (middleX - 256 / 2f) / 2 - mouseX, middleY + 80 - 40 - mouseY, entity);
+        InventoryScreen.renderEntityInInventory((middleX - 128) / 2, middleY + 90, (int)(45.0F * renderItemScale), ((float)middleX - 128.0F) / 2.0F - mouseX, (float)(middleY + 80 - 40) - mouseY, this.entity);
     }
 
     @Override
-    protected void drawRightEntity(GuiGraphics graphics, int posX, int posY, MaidModelInfo modelItem) {
+    protected void drawRightEntity(PoseStack poseStack, int posX, int posY, MaidModelInfo modelItem) {
         ResourceLocation cacheIconId = modelItem.getCacheIconId();
         var allTextures = Minecraft.getInstance().textureManager.byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
-            graphics.blit(cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, cacheIconId);
+            blit(poseStack, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0.0F, 0.0F, textureSize, textureSize, textureSize, textureSize);
         } else {
-            drawEntity(graphics, posX, posY, modelItem);
+            drawEntity(poseStack, posX, posY, modelItem);
         }
     }
 
@@ -124,7 +128,7 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
         ROW_INDEX = rowIndex;
     }
 
-    private void drawEntity(GuiGraphics graphics, int posX, int posY, MaidModelInfo modelItem) {
+    private void drawEntity(PoseStack poseStack, int posX, int posY, MaidModelInfo modelItem) {
         Level world = getMinecraft().level;
         if (world == null) {
             return;
@@ -147,6 +151,6 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
         } else {
             maid.setModelId(modelItem.getModelId().toString());
         }
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, posX, posY, (int) (12 * modelItem.getRenderItemScale()), -25, -20, maid);
+        InventoryScreen.renderEntityInInventory(posX, posY, (int)(12.0F * modelItem.getRenderItemScale()), -25.0F, -20.0F, maid);
     }
 }

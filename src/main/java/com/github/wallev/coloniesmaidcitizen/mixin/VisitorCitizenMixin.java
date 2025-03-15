@@ -2,7 +2,7 @@ package com.github.wallev.coloniesmaidcitizen.mixin;
 
 import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
-import com.minecolonies.core.entity.visitor.VisitorCitizen;
+import com.minecolonies.core.entity.citizen.VisitorCitizen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;

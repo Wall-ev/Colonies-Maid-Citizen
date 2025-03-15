@@ -22,19 +22,11 @@ public abstract class VComponent implements Component {
     }
 
     public static MutableComponent translatable(String pKey) {
-        return MutableComponent.create(new TranslatableContents(pKey, null, TranslatableContents.NO_ARGS));
+        return MutableComponent.create(new TranslatableContents(pKey));
     }
 
     public static MutableComponent translatable(String pKey, Object... pArgs) {
         return MutableComponent.create(new TranslatableContents(pKey, null, pArgs));
-    }
-
-    public static MutableComponent translatableWithFallback(String pKey, @Nullable String pFallback) {
-        return MutableComponent.create(new TranslatableContents(pKey, pFallback, TranslatableContents.NO_ARGS));
-    }
-
-    public static MutableComponent translatableWithFallback(String pKey, @Nullable String pFallback, Object... pArgs) {
-        return MutableComponent.create(new TranslatableContents(pKey, pFallback, pArgs));
     }
 
     public static MutableComponent empty() {

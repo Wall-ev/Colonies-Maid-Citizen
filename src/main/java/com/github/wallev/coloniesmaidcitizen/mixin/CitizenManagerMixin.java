@@ -3,12 +3,10 @@ package com.github.wallev.coloniesmaidcitizen.mixin;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.wallev.coloniesmaidcitizen.handler.CitizenMaidData;
 import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.minecolonies.api.colony.ICitizenData;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import com.minecolonies.core.colony.managers.CitizenManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -73,11 +71,11 @@ public class CitizenManagerMixin {
         }
     }
 
-    @Inject(method = "spawnCitizenOnPosition(Lcom/minecolonies/api/colony/ICitizenData;Lnet/minecraft/world/level/Level;ZLnet/minecraft/core/BlockPos;)Lcom/minecolonies/api/colony/ICitizenData;"
-            , at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;discard()V"), remap = false)
-    private void mc$getExistingCitizenData(ICitizenData data, Level world, boolean force, BlockPos spawnPoint, CallbackInfoReturnable<ICitizenData> cir, @Local Entity existing) {
-        if (existing instanceof ICitizenMaid citizenMaid) {
-            mc$citizenMaidData = new CitizenMaidData(data, existing.getUUID(), citizenMaid.mc$getCitizenMaidModelId(), citizenMaid.mc$isEnableCitizenMaidModelRender());
-        }
-    }
+//    @Inject(method = "spawnCitizenOnPosition(Lcom/minecolonies/api/colony/ICitizenData;Lnet/minecraft/world/level/Level;ZLnet/minecraft/core/BlockPos;)Lcom/minecolonies/api/colony/ICitizenData;"
+//            , at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;discard()V"), remap = false)
+//    private void mc$getExistingCitizenData(ICitizenData data, Level world, boolean force, BlockPos spawnPoint, CallbackInfoReturnable<ICitizenData> cir, @Local Entity existing) {
+//        if (existing instanceof ICitizenMaid citizenMaid) {
+//            mc$citizenMaidData = new CitizenMaidData(data, existing.getUUID(), citizenMaid.mc$getCitizenMaidModelId(), citizenMaid.mc$isEnableCitizenMaidModelRender());
+//        }
+//    }
 }
