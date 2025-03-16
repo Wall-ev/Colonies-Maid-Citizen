@@ -7,8 +7,8 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
-import com.github.wallev.coloniesmaidcitizen.network.ColoniesMaidModelMessage;
-import com.github.wallev.coloniesmaidcitizen.network.ColoniesMaidSetModelRenderMessage;
+import com.github.wallev.coloniesmaidcitizen.network.ColoniesMaidModelPackage;
+import com.github.wallev.coloniesmaidcitizen.network.ColoniesMaidSetModelRenderPackage;
 import com.github.wallev.coloniesmaidcitizen.network.NetworkHandler;
 import com.github.wallev.coloniesmaidcitizen.util.version.VComponent;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
@@ -48,24 +48,36 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
         MutableComponent enableCache = VComponent.translatable("gui.colonies_maidcitizen.enable_maid_model_render.button");
         int checkBoxWidth = this.font.width(enableCache) + 20;
         int xOffset = (startX - 128) / 2 - checkBoxWidth / 2;
-        this.addRenderableWidget(new Checkbox(xOffset, startY - 101 - 20, 20, 20, enableCache, ((ICitizenMaid) entity).mc$isEnableCitizenMaidModelRender()) {
-            public void onPress() {
-                super.onPress();
-                NetworkHandler.sendToServer(new ColoniesMaidSetModelRenderMessage(entity.getId(), this.selected()));
-            }
-        });
+        Checkbox cacheCheckBox = Checkbox.builder(enableCache, font)
+                .pos(xOffset, startY - 101)
+                .selected(((ICitizenMaid) entity).mc$isEnableCitizenMaidModelRender())
+                .onValueChange((checkBox, value) -> NetworkHandler.sendToServer(new ColoniesMaidSetModelRenderPackage(entity.getId(), value)))
+                .build();
+        this.addRenderableWidget(cacheCheckBox);
     }
 
     @Override
     protected void drawLeftEntity(GuiGraphics graphics, int middleX, int middleY, float mouseX, float mouseY) {
         float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(((ICitizenMaid) entity).mc$getCitizenMaidModelId());
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, (middleX - 256 / 2) / 2, middleY + 90, (int) (45 * renderItemScale), (middleX - 256 / 2f) / 2 - mouseX, middleY + 80 - 40 - mouseY, entity);
+        int centerX = (middleX - 256 / 2) / 2;
+        int yOffset = (int) (45 * (renderItemScale - 1));
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+                graphics,
+                centerX - 100,
+                middleY - 100,
+                centerX + 100,
+                middleY + 200 - yOffset,
+                (int) (45 * renderItemScale),
+                0.1F,
+                mouseX,
+                mouseY,
+                entity);
     }
 
     @Override
     protected void drawRightEntity(GuiGraphics graphics, int posX, int posY, MaidModelInfo modelItem) {
         ResourceLocation cacheIconId = modelItem.getCacheIconId();
-        var allTextures = Minecraft.getInstance().textureManager.byPath;
+        var allTextures = Minecraft.getInstance().getTextureManager().byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
             graphics.blit(cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
@@ -82,7 +94,7 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
     @Override
     protected void notifyModelChange(AbstractEntityCitizen citizen, MaidModelInfo info) {
         if (info.getEasterEgg() == null) {
-            NetworkHandler.sendToServer(new ColoniesMaidModelMessage(entity.getId(), info.getModelId()));
+            NetworkHandler.sendToServer(new ColoniesMaidModelPackage(entity.getId(), info.getModelId()));
         }
     }
 
@@ -147,6 +159,16 @@ public class ColoniesMaidModelGui extends AbstractModelGui<AbstractEntityCitizen
         } else {
             maid.setModelId(modelItem.getModelId().toString());
         }
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, posX, posY, (int) (12 * modelItem.getRenderItemScale()), -25, -20, maid);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+                graphics,
+                posX - 10,
+                posY - 32,
+                posX + 10,
+                posY + 12,
+                (int) (12 * modelItem.getRenderItemScale()),
+                0.1F,
+                posX + 25,
+                posY + 5,
+                maid);
     }
 }

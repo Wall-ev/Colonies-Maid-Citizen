@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.ConvertMaidEvent;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import net.minecraft.world.entity.Mob;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 
 public class MaidModelRender {

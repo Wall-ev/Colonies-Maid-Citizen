@@ -52,32 +52,32 @@ public class CitizenManagerMixin {
 //        }
 //    }
 
-    @Inject(method = "spawnCitizenOnPosition", at = @At(value = "TAIL"), remap = false)
-    private void mc$spawn(ICitizenData data, Level world, boolean force, BlockPos spawnPoint, CallbackInfoReturnable<ICitizenData> cir) {
-        ICitizenData citizenData = cir.getReturnValue();
-        AbstractEntityCitizen entity = citizenData.getEntity().orElse(null);
-
-        if (!(entity instanceof ICitizenMaid citizenMaid)) return;
-
-        if (this.mc$citizenMaidData != null) {
-            citizenMaid.mc$setCitizenMaidModelId(mc$citizenMaidData.modelId());
-            citizenMaid.mc$setEnableCitizenMaidModelRender(mc$citizenMaidData.enableModelRender());
-            this.mc$citizenMaidData = null;
-        } else {
-            int modelSize = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelSize();
-            if (modelSize > 0) {
-                int skipRandom = new Random().nextInt(modelSize);
-                Optional<String> modelId = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelIdSet().stream().skip(skipRandom).findFirst();
-                modelId.ifPresent(citizenMaid::mc$setCitizenMaidModelId);
-            }
-        }
-    }
-
-    @Inject(method = "spawnCitizenOnPosition(Lcom/minecolonies/api/colony/ICitizenData;Lnet/minecraft/world/level/Level;ZLnet/minecraft/core/BlockPos;)Lcom/minecolonies/api/colony/ICitizenData;"
-            , at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;discard()V"), remap = false)
-    private void mc$getExistingCitizenData(ICitizenData data, Level world, boolean force, BlockPos spawnPoint, CallbackInfoReturnable<ICitizenData> cir, @Local Entity existing) {
-        if (existing instanceof ICitizenMaid citizenMaid) {
-            mc$citizenMaidData = new CitizenMaidData(data, existing.getUUID(), citizenMaid.mc$getCitizenMaidModelId(), citizenMaid.mc$isEnableCitizenMaidModelRender());
-        }
-    }
+//    @Inject(method = "spawnCitizenOnPosition", at = @At(value = "TAIL"), remap = false)
+//    private void mc$spawn(ICitizenData data, Level world, boolean force, BlockPos spawnPoint, CallbackInfoReturnable<ICitizenData> cir) {
+//        ICitizenData citizenData = cir.getReturnValue();
+//        AbstractEntityCitizen entity = citizenData.getEntity().orElse(null);
+//
+//        if (!(entity instanceof ICitizenMaid citizenMaid)) return;
+//
+//        if (this.mc$citizenMaidData != null) {
+//            citizenMaid.mc$setCitizenMaidModelId(mc$citizenMaidData.modelId());
+//            citizenMaid.mc$setEnableCitizenMaidModelRender(mc$citizenMaidData.enableModelRender());
+//            this.mc$citizenMaidData = null;
+//        } else {
+//            int modelSize = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelSize();
+//            if (modelSize > 0) {
+//                int skipRandom = new Random().nextInt(modelSize);
+//                Optional<String> modelId = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelIdSet().stream().skip(skipRandom).findFirst();
+//                modelId.ifPresent(citizenMaid::mc$setCitizenMaidModelId);
+//            }
+//        }
+//    }
+//
+//    @Inject(method = "spawnCitizenOnPosition(Lcom/minecolonies/api/colony/ICitizenData;Lnet/minecraft/world/level/Level;ZLnet/minecraft/core/BlockPos;)Lcom/minecolonies/api/colony/ICitizenData;"
+//            , at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;discard()V"), remap = false)
+//    private void mc$getExistingCitizenData(ICitizenData data, Level world, boolean force, BlockPos spawnPoint, CallbackInfoReturnable<ICitizenData> cir, @Local Entity existing) {
+//        if (existing instanceof ICitizenMaid citizenMaid) {
+//            mc$citizenMaidData = new CitizenMaidData(data, existing.getUUID(), citizenMaid.mc$getCitizenMaidModelId(), citizenMaid.mc$isEnableCitizenMaidModelRender());
+//        }
+//    }
 }

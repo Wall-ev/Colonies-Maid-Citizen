@@ -1,11 +1,12 @@
 package com.github.wallev.coloniesmaidcitizen.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class RenderConfig {
-    public static ForgeConfigSpec.BooleanValue ENABLE_GLOBAL_RENDER;
+    public static ModConfigSpec.BooleanValue ENABLE_GLOBAL_RENDER;
 
-    private static void init(ForgeConfigSpec.Builder builder) {
+    private static void init(ModConfigSpec.Builder builder) {
         builder.push("Render");
 
         builder.comment("This is the master control for rendering the rendering of the inhabitants using the maid model.");
@@ -14,8 +15,8 @@ public class RenderConfig {
         builder.pop();
     }
 
-    public static ForgeConfigSpec init() {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+    public static ModConfigSpec init() {
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         RenderConfig.init(builder);
         return builder.build();
     }

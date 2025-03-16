@@ -8,16 +8,15 @@ import com.minecolonies.core.entity.other.SittingEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.Mob;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
-
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = ColoniesMaidCitizen.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, modid = ColoniesMaidCitizen.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class MaidModelRenderRegister {
     private static EntityMaidRenderer RENDERER;
 
@@ -53,6 +52,6 @@ public class MaidModelRenderRegister {
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(MaidModelRender.class);
+        NeoForge.EVENT_BUS.register(MaidModelRender.class);
     }
 }

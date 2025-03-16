@@ -38,9 +38,9 @@ public interface ICitizenMaid {
         entityData.set(MC_DATA_ENABLE_MAID_MODEL_RENDER, enable);
     }
 
-    default void defineSynchedDataWithCitizen(SynchedEntityData entityData) {
-        entityData.define(MC_DATA_MAID_MODEL_ID, MC_DEFAULT_CITIZEN_MAID_MODEL_ID);
-        entityData.define(MC_DATA_ENABLE_MAID_MODEL_RENDER, true);
+    default void defineSynchedDataWithCitizen(SynchedEntityData.Builder builder) {
+        builder.define(MC_DATA_MAID_MODEL_ID, MC_DEFAULT_CITIZEN_MAID_MODEL_ID);
+        builder.define(MC_DATA_ENABLE_MAID_MODEL_RENDER, true);
     }
 
     default void readAdditionalSaveDataWithCitizen(CompoundTag compoundTag) {

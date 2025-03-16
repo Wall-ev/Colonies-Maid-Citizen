@@ -1,18 +1,17 @@
 package com.github.wallev.coloniesmaidcitizen;
 
-import com.github.wallev.coloniesmaidcitizen.config.RenderConfig;
+import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
 import com.github.wallev.coloniesmaidcitizen.init.CmcItems;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 
 @Mod(ColoniesMaidCitizen.MOD_ID)
 public final class ColoniesMaidCitizen {
     public static final String MOD_ID = "colonies_maidcitizen";
 
-    public ColoniesMaidCitizen() {
-        CmcItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, RenderConfig.init());
+    public ColoniesMaidCitizen(IEventBus modEventBus, ModContainer modContainer) {
+        modEventBus.addListener(NetworkHandler::registerPacket);
+        CmcItems.ITEMS.register(modEventBus);
     }
 }

@@ -4,6 +4,7 @@ import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import com.minecolonies.core.entity.citizen.EntityCitizen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
@@ -18,9 +19,9 @@ public abstract class EntityCitizenMixin extends AbstractEntityCitizen implement
         super(type, worldIn);
     }
 
-    @Inject(at = @At("TAIL"), method = "defineSynchedData()V")
-    private void mc$defineSynchedData(CallbackInfo ci) {
-        this.defineSynchedDataWithCitizen(entityData);
+    @Inject(at = @At("TAIL"), method = "Lcom/minecolonies/core/entity/citizen/EntityCitizen;defineSynchedData(Lnet/minecraft/network/syncher/SynchedEntityData$Builder;)V")
+    private void mc$defineSynchedData(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        this.defineSynchedDataWithCitizen(builder);
     }
 
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V")

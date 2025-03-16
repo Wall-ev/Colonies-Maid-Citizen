@@ -1,35 +1,26 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-
-// 插件配置
+// 调用的 gradle 插件
 plugins {
+    id 'java-library'
+
+    // 用于 eclipse 或者 idea 的插件
     id 'eclipse'
     id 'idea'
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-    // This should be below the net.minecraftforge.gradle plugin
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
-    // Mixin Plugin
-    id 'org.spongepowered.mixin' version '0.7.+'
+
+    // NeoForged 开发插件
+    id 'net.neoforged.moddev' version '2.0.78'
+
+    // shadow 插件
+    id 'com.gradleup.shadow' version '8.3.6'
 }
 
 // 加载配置
-// [,1.21)
-def minecraft_version= "1.20.1"
+// [1.21,)
+def minecraft_version= "1.21.1"
 loadProperties(minecraft_version)
 loadGradle(minecraft_version)
 
 // Java版本
-// [,17]
+// [21,)
 java.toolchain.languageVersion = JavaLanguageVersion.of(java_version)
 
 // 版本类型: beta alpha release
@@ -42,123 +33,123 @@ base {
     group = mod_group_id
 }
 
-// MC 配置
-minecraft {
-    mappings channel: mapping_channel, version: mapping_version
+neoForge {
+    // NeoForge 版本信息
+    version = project.neo_version
 
-    copyIdeResources = true
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    // 反混淆表
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
 
+    // 运行部分
     runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                "${mod_id}" {
-                    source sourceSets.main
-                }
-            }
-        }
-
         client {
-            property 'forge.enabledGameTestNamespaces', mod_id
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            client()
+            gameDirectory = project.file('run/client')
+            programArguments = [
+                    "--username", "albert_cat"
+            ]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         server {
-            property 'forge.enabledGameTestNamespaces', mod_id
-            args '--nogui'
-
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+            server()
+            gameDirectory = project.file('run/server')
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         gameTestServer {
-            property 'forge.enabledGameTestNamespaces', mod_id
+            type = "gameTestServer"
+            gameDirectory = project.file('run/gameTestServer')
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            data()
+            gameDirectory = project.file('run/data')
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources/').getAbsolutePath(),
+                    '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+    }
+
+    mods {
+        // define mod <-> source bindings
+        // these are used to tell the game which sources are for which mod
+        // mostly optional in a single mod project
+        // but multi mod projects should define one per mod
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
         }
     }
 }
 
-// Mixin 配置
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-    config "${mod_id}.mixins.json"
+sourceSets.main {
+    resources {
+        srcDir 'src/generated/resources'
+    }
 }
 
-// 自动导入自动生成的资源(resources)
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+assemble {
+    dependsOn shadowJar
+}
 
-// 生成 toml 信息，用于打包成生产环境的mod
-tasks.named('processResources', ProcessResources).configure {
+tasks.compileJava {
+    // dsx137: 强制重新编译和生成 refmap.json 文件，避免偶发情况下该文件丢失问题
+    outputs.upToDateWhen { false }
+}
+
+// 用于 neoforge.mods 里替换那一堆 ${xxxx}
+tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
-            minecraft_version: minecraft_version,
+            minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,
-            forge_version: forge_version,
-            forge_version_range: forge_version_range,
-            loader_version_range: loader_version_range,
-
-            mod_id: mod_id,
-            mod_name: mod_name,
-            mod_license: mod_license,
-            mod_version: mod_version,
-            mod_authors: mod_authors,
-            mod_description: mod_description,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
     }
 }
 
-// 生成 manifest 内容，用于打包时填充版本信息等内容
-tasks.named('jar', Jar).configure {
+// 生成 manifest 内容，用于填充版本信息等内容
+jar {
+    enabled = false // 禁用默认的 jar 任务
     manifest {
         attributes([
-                'Specification-Title'     : mod_id,
-                'Specification-Vendor'    : mod_authors,
-                'Specification-Version'   : '1', // We are version 1 of ourselves
-                'Implementation-Title'    : project.name,
-                'Implementation-Version'  : project.jar.archiveVersion,
-                'Implementation-Vendor'   : mod_authors,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Implementation-Title"  : project.name,
+                "Implementation-Version": "${version}"
         ])
     }
-
-    finalizedBy 'reobfJar'
 }
 
-// 指定编码显式为 UTF
+// 必须，编码需要显式指定为 UTF
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-// ALL 为下载 gradle 源码，方便查看调试
-tasks.named('wrapper', Wrapper).configure {
-    distributionType = Wrapper.DistributionType.ALL
-}
-
-// 基础配置
-dependencies {
-    // 本体
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    // Apply Mixin AP
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.0"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.0")) {
-        jarJar.ranged(it, "[0.4.0,)")
+// 让 idea 主动下载前置库的源码和 Javadoc
+// 新版本 idea 默认不会下载这两个，这虽然加快了构建速度，但是不方便调试
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
     }
 }
+
+
 
 // libs自动依赖
 dependencies {
@@ -175,8 +166,8 @@ dependencies {
 
 // util
 def loadGradle(String minecraft_version) {
-    apply from: "/setting/common/forge/repositories.gradle"
-    apply from: "/setting/common/forge/dependencies.gradle"
+    apply from: "/setting/common/neoforge/repositories.gradle"
+    apply from: "/setting/common/neoforge/dependencies.gradle"
     apply from: "/setting/version/${minecraft_version}/dependencies.gradle"
 }
 

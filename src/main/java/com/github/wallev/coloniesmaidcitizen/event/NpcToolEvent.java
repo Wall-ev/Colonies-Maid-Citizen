@@ -11,16 +11,14 @@ import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-import static com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider.MAID_COLONIES_CAP;
-
-@Mod.EventBusSubscriber(modid = ColoniesMaidCitizen.MOD_ID)
+@EventBusSubscriber(modid = ColoniesMaidCitizen.MOD_ID)
 public final class NpcToolEvent {
     @SubscribeEvent
     public static void citizenMake(PlayerInteractEvent.EntityInteract event) {
@@ -53,7 +51,7 @@ public final class NpcToolEvent {
 
         // 潜行右键开关小镇女仆模型渲染, 非潜行设置使用哪个女仆模型
         if (player.isShiftKeyDown()) {
-            MaidColoniesCapability maidColoniesCapability = citizen.level.getCapability(MAID_COLONIES_CAP, null).resolve().orElse(null);
+            MaidColoniesCapability maidColoniesCapability = MaidColoniesCapability.get(citizen.level()).orElse(null);
             if (maidColoniesCapability == null) {
                 return;
             }

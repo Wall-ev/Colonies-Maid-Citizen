@@ -4,14 +4,14 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMai
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.GeckoEntityMaidRenderer;
 import com.github.wallev.coloniesmaidcitizen.ColoniesMaidCitizen;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderNameTagEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderNameTagEvent;
+import net.neoforged.neoforge.common.util.TriState;
 
-@Mod.EventBusSubscriber(modid = ColoniesMaidCitizen.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = ColoniesMaidCitizen.MOD_ID, value = Dist.CLIENT)
 public class DisableNameRendererEvent {
 
     @OnlyIn(Dist.CLIENT)
@@ -19,7 +19,7 @@ public class DisableNameRendererEvent {
     public static void disabledCitizenMaidNameRenderer(RenderNameTagEvent event) {
         if (event.getEntity() instanceof AbstractEntityCitizen &&
                 (event.getEntityRenderer() instanceof EntityMaidRenderer || event.getEntityRenderer() instanceof GeckoEntityMaidRenderer<?>)) {
-            event.setResult(Event.Result.DENY);
+            event.setCanRender(TriState.FALSE);
         }
     }
 

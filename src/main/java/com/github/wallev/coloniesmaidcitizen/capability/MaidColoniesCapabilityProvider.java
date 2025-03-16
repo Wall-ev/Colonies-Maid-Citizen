@@ -1,29 +1,20 @@
 package com.github.wallev.coloniesmaidcitizen.capability;
 
-import net.minecraft.core.Direction;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Optional;
 
-public class MaidColoniesCapabilityProvider implements ICapabilitySerializable<CompoundTag> {
-    public static Capability<MaidColoniesCapability> MAID_COLONIES_CAP = CapabilityManager.get(new CapabilityToken<>() {
-    });
+public class MaidColoniesCapabilityProvider implements INBTSerializable<CompoundTag> {
+
+    public static final AttachmentType<MaidColoniesCapability> MAID_COLONIES_CAP = AttachmentType.builder(holder -> new MaidColoniesCapability()).build();
+
     private MaidColoniesCapability instance = null;
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == MAID_COLONIES_CAP) {
-            return LazyOptional.of(this::createCapability).cast();
-        }
-        return LazyOptional.empty();
-    }
 
     @Nonnull
     private MaidColoniesCapability createCapability() {
@@ -34,12 +25,19 @@ public class MaidColoniesCapabilityProvider implements ICapabilitySerializable<C
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         return createCapability().serializeNBT();
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        createCapability().deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
+        createCapability().deserializeNBT(compoundTag);
+    }
+
+    public static Optional<MaidColoniesCapability> get(@Nullable AbstractClientPlayer player) {
+        if (player == null) {
+            return Optional.empty();
+        }
+        return Optional.of(player.getData(MAID_COLONIES_CAP));
     }
 }

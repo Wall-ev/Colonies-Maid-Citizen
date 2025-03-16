@@ -1,11 +1,17 @@
 package com.github.wallev.coloniesmaidcitizen.capability;
 
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
 
+import javax.annotation.Nullable;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class MaidColoniesCapability {
+    public static final AttachmentType<MaidColoniesCapability> TYPE = AttachmentType.builder(holder -> new MaidColoniesCapability()).build();
     private final Map<Integer, Boolean> maidColonies = new LinkedHashMap<>();
     private boolean dirty;
 
@@ -49,5 +55,12 @@ public class MaidColoniesCapability {
 
     public Map<Integer, Boolean> getMaidColonies() {
         return maidColonies;
+    }
+
+    public static Optional<MaidColoniesCapability> get(@Nullable IAttachmentHolder attachmentHolder) {
+        if (attachmentHolder == null) {
+            return Optional.empty();
+        }
+        return Optional.of(attachmentHolder.getData(TYPE));
     }
 }

@@ -18,7 +18,7 @@ public abstract class VComponent implements Component {
     }
 
     public static MutableComponent literal(String pText) {
-        return MutableComponent.create(new LiteralContents(pText));
+        return MutableComponent.create(new PlainTextContents.LiteralContents(pText));
     }
 
     public static MutableComponent translatable(String pKey) {
@@ -38,7 +38,7 @@ public abstract class VComponent implements Component {
     }
 
     public static MutableComponent empty() {
-        return MutableComponent.create(ComponentContents.EMPTY);
+        return MutableComponent.create(PlainTextContents.EMPTY);
     }
 
     public static MutableComponent keybind(String pName) {
