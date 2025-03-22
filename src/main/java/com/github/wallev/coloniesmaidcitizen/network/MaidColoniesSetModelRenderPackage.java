@@ -1,6 +1,6 @@
 package com.github.wallev.coloniesmaidcitizen.network;
 
-import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapability;
+import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider;
 import com.github.wallev.coloniesmaidcitizen.util.ResourceLocationUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -26,7 +26,7 @@ public record MaidColoniesSetModelRenderPackage(int id, Boolean enable) implemen
                 if (sender == null) {
                     return;
                 }
-                MaidColoniesCapability.get(sender).ifPresent(maidColoniesCapability -> {
+                MaidColoniesCapabilityProvider.get(sender.level).ifPresent(maidColoniesCapability -> {
                     maidColoniesCapability.setEnableRender(message.id, message.enable);
                     NetworkHandler.sendToClientPlayer(sender, new CMaidColoniesSetModelRenderPackage(message.id, message.enable));
                 });

@@ -1,6 +1,6 @@
 package com.github.wallev.coloniesmaidcitizen.network;
 
-import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapability;
+import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider;
 import com.github.wallev.coloniesmaidcitizen.util.ResourceLocationUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -43,7 +43,7 @@ public record SyncMaidColoniesClientPackage(Map<Integer, Boolean> maidColonies) 
         if (sender == null) {
             return;
         }
-        MaidColoniesCapability.get(sender).ifPresent(maidColoniesCapability -> {
+        MaidColoniesCapabilityProvider.get(sender.level).ifPresent(maidColoniesCapability -> {
             message.maidColonies().forEach(maidColoniesCapability::setEnableRender);
         });
     }

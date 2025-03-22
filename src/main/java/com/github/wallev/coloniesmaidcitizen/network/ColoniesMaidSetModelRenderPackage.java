@@ -38,6 +38,6 @@ public record ColoniesMaidSetModelRenderPackage(int id, Boolean enable) implemen
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
-        return null;
+        return TYPE;
     }
 }

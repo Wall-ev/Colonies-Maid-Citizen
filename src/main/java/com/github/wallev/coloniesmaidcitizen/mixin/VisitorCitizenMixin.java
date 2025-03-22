@@ -4,6 +4,7 @@ import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import com.minecolonies.core.entity.visitor.VisitorCitizen;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.level.Level;
@@ -22,9 +23,9 @@ public abstract class VisitorCitizenMixin extends AbstractEntityCitizen implemen
     @Shadow
     public abstract void addAdditionalSaveData(CompoundTag compound);
 
-    @Inject(at = @At("TAIL"), method = "defineSynchedData()V")
-    private void mc$defineSynchedData(CallbackInfo ci) {
-        this.defineSynchedDataWithCitizen(entityData);
+    @Inject(at = @At("TAIL"), method = "defineSynchedData")
+    private void mc$defineSynchedData(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        this.defineSynchedDataWithCitizen(builder);
     }
 
     @Inject(at = @At("TAIL"), method = "readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V")

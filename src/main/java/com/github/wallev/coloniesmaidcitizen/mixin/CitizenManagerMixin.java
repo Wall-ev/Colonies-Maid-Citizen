@@ -5,8 +5,11 @@ import com.github.wallev.coloniesmaidcitizen.handler.CitizenMaidData;
 import com.github.wallev.coloniesmaidcitizen.handler.ICitizenMaid;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.minecolonies.api.colony.ICitizenData;
+import com.minecolonies.api.colony.ICivilianData;
+import com.minecolonies.api.entity.citizen.AbstractCivilianEntity;
 import com.minecolonies.api.entity.citizen.AbstractEntityCitizen;
 import com.minecolonies.core.colony.managers.CitizenManager;
+import com.minecolonies.core.colony.managers.VisitorManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -22,7 +25,7 @@ import java.util.Optional;
 import java.util.Random;
 
 @Pseudo
-@Mixin(value = CitizenManager.class)
+@Mixin(value = VisitorManager.class)
 public class CitizenManagerMixin {
     @Unique
     @Nullable
@@ -52,26 +55,27 @@ public class CitizenManagerMixin {
 //        }
 //    }
 
-//    @Inject(method = "spawnCitizenOnPosition", at = @At(value = "TAIL"), remap = false)
-//    private void mc$spawn(ICitizenData data, Level world, boolean force, BlockPos spawnPoint, CallbackInfoReturnable<ICitizenData> cir) {
-//        ICitizenData citizenData = cir.getReturnValue();
-//        AbstractEntityCitizen entity = citizenData.getEntity().orElse(null);
-//
-//        if (!(entity instanceof ICitizenMaid citizenMaid)) return;
-//
-//        if (this.mc$citizenMaidData != null) {
-//            citizenMaid.mc$setCitizenMaidModelId(mc$citizenMaidData.modelId());
-//            citizenMaid.mc$setEnableCitizenMaidModelRender(mc$citizenMaidData.enableModelRender());
-//            this.mc$citizenMaidData = null;
-//        } else {
-//            int modelSize = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelSize();
-//            if (modelSize > 0) {
-//                int skipRandom = new Random().nextInt(modelSize);
-//                Optional<String> modelId = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelIdSet().stream().skip(skipRandom).findFirst();
-//                modelId.ifPresent(citizenMaid::mc$setCitizenMaidModelId);
-//            }
-//        }
-//    }
+
+    @Inject(method = "spawnOrCreateCivilian(Lcom/minecolonies/api/colony/ICivilianData;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Z)Lcom/minecolonies/api/colony/ICivilianData;", at = @At("TAIL"), cancellable = true)
+    private void mc$spawn(ICivilianData par1, Level par2, BlockPos par3, boolean par4, CallbackInfoReturnable<ICivilianData> cir) {
+        ICivilianData civilianData = cir.getReturnValue();
+        AbstractCivilianEntity entity = civilianData.getEntity().orElse(null);
+
+        if (!(entity instanceof ICitizenMaid citizenMaid)) return;
+
+        if (this.mc$citizenMaidData != null) {
+            citizenMaid.mc$setCitizenMaidModelId(mc$citizenMaidData.modelId());
+            citizenMaid.mc$setEnableCitizenMaidModelRender(mc$citizenMaidData.enableModelRender());
+            this.mc$citizenMaidData = null;
+        } else {
+            int modelSize = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelSize();
+            if (modelSize > 0) {
+                int skipRandom = new Random().nextInt(modelSize);
+                Optional<String> modelId = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelIdSet().stream().skip(skipRandom).findFirst();
+                modelId.ifPresent(citizenMaid::mc$setCitizenMaidModelId);
+            }
+        }
+    }
 //
 //    @Inject(method = "spawnCitizenOnPosition(Lcom/minecolonies/api/colony/ICitizenData;Lnet/minecraft/world/level/Level;ZLnet/minecraft/core/BlockPos;)Lcom/minecolonies/api/colony/ICitizenData;"
 //            , at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;discard()V"), remap = false)

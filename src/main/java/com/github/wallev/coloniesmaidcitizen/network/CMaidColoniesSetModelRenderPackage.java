@@ -1,6 +1,6 @@
 package com.github.wallev.coloniesmaidcitizen.network;
 
-import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapability;
+import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -11,7 +11,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider.MAID_COLONIES_CAP;
 import static com.github.wallev.coloniesmaidcitizen.util.ResourceLocationUtil.getResourceLocation;
 
 public record CMaidColoniesSetModelRenderPackage(int id, Boolean enable) implements CustomPacketPayload {
@@ -36,7 +35,7 @@ public record CMaidColoniesSetModelRenderPackage(int id, Boolean enable) impleme
         if (sender == null) {
             return;
         }
-        MaidColoniesCapability.get(sender).ifPresent(maidColoniesCapability -> {
+        MaidColoniesCapabilityProvider.get(sender.level).ifPresent(maidColoniesCapability -> {
             maidColoniesCapability.setEnableRender(message.id, message.enable);
         });
     }

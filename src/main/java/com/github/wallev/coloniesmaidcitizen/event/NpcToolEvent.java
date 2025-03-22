@@ -1,7 +1,7 @@
 package com.github.wallev.coloniesmaidcitizen.event;
 
 import com.github.wallev.coloniesmaidcitizen.ColoniesMaidCitizen;
-import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapability;
+import com.github.wallev.coloniesmaidcitizen.capability.MaidColoniesCapabilityProvider;
 import com.github.wallev.coloniesmaidcitizen.client.ColoniesMaidModelGui;
 import com.github.wallev.coloniesmaidcitizen.init.CmcItems;
 import com.minecolonies.api.colony.IColony;
@@ -51,7 +51,7 @@ public final class NpcToolEvent {
 
         // 潜行右键开关小镇女仆模型渲染, 非潜行设置使用哪个女仆模型
         if (player.isShiftKeyDown()) {
-            MaidColoniesCapability maidColoniesCapability = MaidColoniesCapability.get(citizen.level()).orElse(null);
+            MaidColoniesCapabilityProvider maidColoniesCapability = MaidColoniesCapabilityProvider.get(player.level).orElse(null);
             if (maidColoniesCapability == null) {
                 return;
             }
