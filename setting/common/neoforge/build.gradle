@@ -8,16 +8,11 @@ plugins {
 
     // NeoForged 开发插件
     id 'net.neoforged.moddev' version '2.0.78'
-
-    // shadow 插件
-    id 'com.gradleup.shadow' version '8.3.6'
 }
 
 // 加载配置
-// [1.21,)
-def minecraft_version= "xxx"
-loadProperties(minecraft_version)
-loadGradle(minecraft_version)
+loadProperties()
+loadGradle()
 
 // Java版本
 // [21,)
@@ -93,10 +88,6 @@ sourceSets.main {
     }
 }
 
-assemble {
-    dependsOn shadowJar
-}
-
 tasks.compileJava {
     // dsx137: 强制重新编译和生成 refmap.json 文件，避免偶发情况下该文件丢失问题
     outputs.upToDateWhen { false }
@@ -126,7 +117,6 @@ tasks.withType(ProcessResources).configureEach {
 
 // 生成 manifest 内容，用于填充版本信息等内容
 jar {
-    enabled = false // 禁用默认的 jar 任务
     manifest {
         attributes([
                 "Implementation-Title"  : project.name,
@@ -149,31 +139,35 @@ idea {
     }
 }
 
-
-
 // libs自动依赖
 dependencies {
     if (file("libs/${minecraft_version}/implementation").exists()) {
-        implementation fileTree(dir: "libs/${minecraft_version}/implementation", includes: ['*.jar'])
+        implementation fileTree(dir: "Settings/libs/${minecraft_version}/implementation", includes: ['*.jar'])
     }
     if (file("libs/${minecraft_version}/compileOnly").exists()) {
-        compileOnly fileTree(dir: "libs/${minecraft_version}/compileOnly", includes: ['*.jar'])
+        compileOnly fileTree(dir: "Settings/libs/${minecraft_version}/compileOnly", includes: ['*.jar'])
     }
     if (file("libs/${minecraft_version}/runtimeOnly").exists()) {
-        runtimeOnly fileTree(dir: "libs/${minecraft_version}/runtimeOnly", includes: ['*.jar'])
+        runtimeOnly fileTree(dir: "Settings/libs/${minecraft_version}/runtimeOnly", includes: ['*.jar'])
     }
 }
 
 // util
-def loadGradle(String minecraft_version) {
-    apply from: "/setting/common/neoforge/repositories.gradle"
-    apply from: "/setting/common/neoforge/dependencies.gradle"
-    apply from: "/setting/version/${minecraft_version}/dependencies.gradle"
+def loadGradle() {
+    apply from: "Settings/setting/common/${mod_loader}/repositories.gradle"
+    apply from: "Settings/setting/common/${mod_loader}/dependencies.gradle"
+    apply from: "Settings/setting/version/${minecraft_version}-${mod_loader}/dependencies.gradle"
 }
 
-def loadProperties(String minecraft_version) {
-    loadCustomProperties("/gradle.properties")
-    loadCustomProperties("/setting/version/${minecraft_version}/gradle.properties")
+def loadProperties() {
+    loadCustomProperties("Settings/gradle.properties")
+    loadCustomProperties("Settings/setting/version/${minecraft_version}-${mod_loader}/gradle.properties")
+
+    println("> loadProperties.enable_log: ${enable_log} \n")
+    if (Boolean.valueOf(enable_log)) {
+        printProjectInfo()
+        printProperties()
+    }
 }
 
 def loadCustomProperties(String path) {
@@ -187,19 +181,21 @@ def loadCustomProperties(String path) {
     }
 }
 
-def printProjectInfo(Project project) {
+def printProjectInfo() {
     String[] projectInfo = ['minecraft_version', 'minecraft_version_range', 'forge_version', 'forge_version_range', 'loader_version', 'loader_version_range', 'mapping_channel', 'mapping_version']
     println "> Minecraft Version"
     for (final def info in projectInfo) {
         if (project.hasProperty(info)) {
-            println "${info} = ${project.property(info)}"
+            println ">- ${info} = ${project.property(info)}"
         }
     }
+    println ""
 }
 
-def printProperties(Project project) {
+def printProperties() {
     println "> Custom Properties"
     project.properties.each { key, value ->
         println ">- ${key} = ${value}"
     }
+    println ""
 }
