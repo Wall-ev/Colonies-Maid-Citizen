@@ -2,3 +2,8 @@
 	path = Setting
 	url = https://github.com/Wall-ev/Colonies-Maid-Citizen
 	branch = settings
+
+[submodule "MaidsoulKitchen"]
+	path = MaidsoulKitchen
+	url = https://github.com/Wall-ev/MaidsoulKitchen
+	branch = 1.20.1-1.0-dev
