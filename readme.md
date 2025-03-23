@@ -1,1 +1,0 @@
-A touhoulittlemaid and minecolonies addon mod,can make minecolonies's citizen can use touhoulittlemaid's maid model renderer.

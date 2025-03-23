@@ -1,8 +1,0 @@
-{
-  "item.colonies_maidcitizen.npc_tool": "§a化狸",
-  "item.colonies_maidcitizen.npc_tool.desc": "§7- 右键单击居民可更改皮肤，按住 Shift 键右击居民可切换镇民使用女仆模型的渲染\n§7- 当且仅当权限为officer或者owner的时候才能更改这些设置",
-  "config.colonies_maidcitizen.render": "渲染",
-  "config.colonies_maidcitizen.render.use_tlm_model_render": "使用车万女仆模型渲染",
-  "config.colonies_maidcitizen.render.use_tlm_model_render.tooltip": "这里是居民使用女仆模型的渲染的总控",
-  "gui.colonies_maidcitizen.enable_maid_model_render.button": "女仆模型渲染"
-}
