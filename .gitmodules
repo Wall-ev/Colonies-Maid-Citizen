@@ -1,0 +1,4 @@
+[submodule "Settings"]
+	path = Settings
+	url = https://github.com/Wall-ev/Colonies-Maid-Citizen
+	branch = settings
