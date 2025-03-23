@@ -25,7 +25,7 @@ dependencies {
     if (!jade_version.isEmpty())
         implementation fg.deobf("maven.modrinth:jade:${jade_version}-${mod_loader},${minecraft_version}")
     if (!the_one_probe_version.isEmpty())
-        implementation fg.deobf("maven.modrinth:the-one-probe:${the_one_probe_version}-${mod_loader},${minecraft_version}")
+        compileOnly fg.deobf("maven.modrinth:the-one-probe:${the_one_probe_version}-${mod_loader},${minecraft_version}")
     if (!cloth_config_version.isEmpty())
         implementation fg.deobf("maven.modrinth:cloth-config:${cloth_config_version}-${mod_loader},${minecraft_version}")
 
