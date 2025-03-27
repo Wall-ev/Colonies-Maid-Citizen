@@ -1,4 +1,4 @@
 [submodule "Settings"]
 	path = Settings
-	url = https://github.com/Wall-ev/Colonies-Maid-Citizen
+	url = https://github.com/Azumic/ColoniesMaidCitizen
 	branch = settings
