@@ -44,19 +44,18 @@ jobs:
 
       - name: Create timestamp
         id: create_timestamp
-        run: echo "::set-output name=timestamp::$(date '+%Y%m%d%H%M%s')"
+        run: echo "timestamp=$(date '+%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Send file to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.GITHUBTOKEN }}
+#          token: ${{ secrets.GITHUBTOKEN }}
           tag_name: snapshot-${{ steps.create_timestamp.outputs.timestamp }}
           body: ${{ github.event.head_commit.message }}
           draft: false
           prerelease: true
-          files: |
-            ./build/libs/*.jar
+          files: ./build/libs/*.jar
 
       - name: Cleanup Gradle Cache
         run: |
