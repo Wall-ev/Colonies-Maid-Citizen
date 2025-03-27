@@ -17,8 +17,8 @@ public abstract class VComponent implements Component {
         return pText != null ? literal(pText) : CommonComponents.EMPTY;
     }
 
-    public static MutableComponent literal(String pText) {
-        return MutableComponent.create(new PlainTextContents.LiteralContents(pText));
+    public static MutableComponent literal(String text) {
+        return MutableComponent.create(new PlainTextContents.LiteralContents(text));
     }
 
     public static MutableComponent translatable(String pKey) {
