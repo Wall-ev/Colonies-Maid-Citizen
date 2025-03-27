@@ -1,4 +1,0 @@
-[submodule "Settings"]
-	path = Settings
-	url = https://github.com/Azumic/ColoniesMaidCitizen
-	branch = settings
