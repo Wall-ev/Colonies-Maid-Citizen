@@ -201,7 +201,14 @@ def loadCustomProperties(String path) {
 }
 
 def printProjectInfo() {
-    String[] projectInfo = ['minecraft_version', 'minecraft_version_range', 'forge_version', 'forge_version_range', 'loader_version', 'loader_version_range', 'mapping_channel', 'mapping_version']
+    String[] projectInfo = ['minecraft_version',
+                            'minecraft_version_range',
+                            "${mod_loader}_version",
+                            "${mod_loader}_version_range",
+                            'loader_version',
+                            'loader_version_range',
+                            'mapping_channel',
+                            'mapping_version']
     println "> Minecraft Version"
     for (final def info in projectInfo) {
         if (project.hasProperty(info)) {
