@@ -126,6 +126,20 @@ gradle.projectsLoaded {
         }
     }
 
+    // ====================== 聚合初始化任务 ======================
+    rootProject.tasks.register('gradleBuild') {
+        group = taskGroup // 关键点：设置分组
+        description = 'github ci 专用'
+
+        // 声明依赖关系
+        dependsOn (rootProject["syncModules"], rootProject["gradleSymlink"])
+        finalizedBy (rootProject["build"])
+
+        doLast {
+            println "✅ Gradle 初始化完成"
+        }
+    }
+
     // ====================== 可选：自动执行逻辑 ======================
     // 如果需要每次构建前自动执行，可在 build.gradle 中添加：
 //     rootProject.tasks.named('build').configure { dependsOn(rootProject["gradleInit"]) }
