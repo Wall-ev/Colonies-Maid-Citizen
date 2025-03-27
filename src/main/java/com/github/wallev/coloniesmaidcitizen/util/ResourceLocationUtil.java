@@ -8,8 +8,8 @@ import static net.minecraft.resources.ResourceLocation.isValidNamespace;
 import static net.minecraft.resources.ResourceLocation.isValidPath;
 
 public class ResourceLocationUtil {
-    public static boolean isValidResourceLocation(String pLocation) {
-        String[] astring = decompose(pLocation, ':');
+    public static boolean isValidResourceLocation(String location) {
+        String[] astring = decompose(location, ':');
         return isValidNamespace(StringUtils.isEmpty(astring[0]) ? "minecraft" : astring[0]) && isValidPath(astring[1]);
     }
 
