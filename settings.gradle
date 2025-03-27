@@ -1,3 +1,4 @@
+import java.nio.file.Files
 
 /**
  * Gradle插件配置
@@ -32,4 +33,100 @@ pluginManagement {
  */
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
+}
+
+
+gradle.projectsLoaded {
+    def rootProject = gradle.rootProject
+    def taskGroup = 'moddev'
+
+    // ====================== 创建符号链接任务 ======================
+    def createSymlinkTask = rootProject.tasks.register('gradleSymlink') {
+        group = taskGroup // 关键点：设置分组
+        description = '软链接 build.gradle'
+
+        doLast {
+            def targetPath = rootProject.file("${settingsDir}/build.gradle")
+            def sourceFile = rootProject.file("Settings/setting/common/${mod_loader}/build.gradle")
+
+            // 确保目标目录存在
+            targetPath.parentFile.mkdirs()
+
+            // 删除已存在的文件/链接
+            if (targetPath.exists()) {
+                targetPath.delete()
+            }
+
+            // 跨平台创建符号链接（与之前逻辑相同）
+            try {
+                if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+                    def command = "mklink ${targetPath.absolutePath} ${sourceFile.absolutePath}"
+                    def process = Runtime.getRuntime().exec(["cmd", "/c", command] as String[])
+                    process.waitFor()
+                } else {
+                    Files.createSymbolicLink(
+                            targetPath.toPath(),
+                            sourceFile.toPath()
+                    )
+                }
+                println "✅ 符号链接创建成功：${targetPath}"
+            } catch (Exception e) {
+                println "❌ 符号链接创建失败：${e.message}"
+                sourceFile.withInputStream { inputStream -> targetPath.withOutputStream { ot -> ot << inputStream } }
+                println "⚠️ 已改用文件复制方案"
+            }
+        }
+    }
+
+    // ====================== 刷新Gradle任务 ======================
+    def reloadTask = rootProject.tasks.register('reloadGradle') {
+        group = taskGroup
+        description = '刷新Gradle依赖和脚本'
+
+        doLast {
+            // 优化：使用 rootProject 的 exec 方法
+            rootProject.exec {
+                commandLine = ['gradlew.bat']
+            }
+        }
+    }
+
+    def syncModules = rootProject.tasks.register('syncModules') {
+        group = taskGroup
+        description = '同步子模块'
+
+        doLast {
+            // 执行 git submodule init
+            rootProject.exec {
+                commandLine = ['git', 'submodule', 'init']
+                ignoreExitValue = false // 如果命令失败则中断构建
+            }
+
+            // 执行 git submodule update
+            rootProject.exec {
+                commandLine = ['git', 'submodule', 'update', '--remote']
+                ignoreExitValue = false
+            }
+
+            println "✅ 子模块同步完成"
+        }
+    }
+
+    // ====================== 聚合初始化任务 ======================
+    rootProject.tasks.register('gradleInit') {
+        group = taskGroup // 关键点：设置分组
+        description = 'gradle 初始化'
+
+        // 声明依赖关系
+        dependsOn (rootProject["syncModules"], rootProject["gradleSymlink"])
+        finalizedBy (rootProject["reloadGradle"])
+
+        doLast {
+            println "✅ Gradle 初始化完成"
+        }
+    }
+
+    // ====================== 可选：自动执行逻辑 ======================
+    // 如果需要每次构建前自动执行，可在 build.gradle 中添加：
+//     rootProject.tasks.named('build').configure { dependsOn(rootProject["gradleInit"]) }
 }
