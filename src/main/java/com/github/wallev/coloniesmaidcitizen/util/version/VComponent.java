@@ -13,8 +13,8 @@ public abstract class VComponent implements Component {
     private VComponent() {
     }
 
-    public static Component nullToEmpty(@Nullable String pText) {
-        return pText != null ? literal(pText) : CommonComponents.EMPTY;
+    public static Component nullToEmpty(@Nullable String text) {
+        return text != null ? literal(text) : CommonComponents.EMPTY;
     }
 
     public static MutableComponent literal(String text) {

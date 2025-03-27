@@ -40,6 +40,7 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew gradleBuild
+          ./gradlew build
 
       - name: Create timestamp
         id: create_timestamp

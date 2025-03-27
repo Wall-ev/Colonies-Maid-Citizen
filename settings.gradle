@@ -133,7 +133,7 @@ gradle.projectsLoaded {
 
         // 声明依赖关系
         dependsOn (rootProject["syncModules"], rootProject["gradleSymlink"])
-        finalizedBy (rootProject["build"])
+//        finalizedBy (rootProject["build"])
 
         doLast {
             println "✅ Gradle 初始化完成"
