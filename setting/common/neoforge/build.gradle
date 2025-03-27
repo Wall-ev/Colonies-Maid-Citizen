@@ -139,6 +139,20 @@ idea {
     }
 }
 
+tasks.register("snapshotBuild") {
+    group = "moddev" // 关键点：设置分组
+    description = 'Snapshot 版本构建'
+
+    version = "${minecraft_version}-snapshot-v${mod_version}+${new Date().format('yyyy.M.d.H.mm.ss')}"
+
+    // 声明依赖关系
+    dependsOn (rootProject["build"])
+
+    doLast {
+        println "✅ Snapshot 版本构建完成！"
+    }
+}
+
 // libs自动依赖
 dependencies {
     if (file("libs/${minecraft_version}/implementation").exists()) {
