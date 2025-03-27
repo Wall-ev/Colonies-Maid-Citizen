@@ -23,3 +23,6 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# 忽略自动生成的符号链接/副本
+build.gradle
