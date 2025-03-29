@@ -16,4 +16,5 @@ public final class ColoniesMaidCitizen {
         CmcCapability.ATTACHMENT_TYPE.register(modEventBus);
         CmcItems.ITEMS.register(modEventBus);
     }
+    
 }
